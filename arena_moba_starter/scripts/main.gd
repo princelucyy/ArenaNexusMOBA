@@ -30,6 +30,12 @@ var lobby_content: Control
 
 func _ready() -> void:
     randomize()
+    # Arena Nexus is a landscape-first MOBA. Keep Android in landscape so the 16:9 UI
+    # is never letterboxed inside a portrait canvas. Godot also uses expand stretching
+    # so the dark backdrop fills wider device aspect ratios.
+    if DisplayServer.has_feature(DisplayServer.FEATURE_ORIENTATION):
+        DisplayServer.screen_set_orientation(DisplayServer.SCREEN_SENSOR_LANDSCAPE)
+    get_viewport().size_changed.connect(_on_viewport_size_changed)
     ui_layer = CanvasLayer.new()
     add_child(ui_layer)
     ui_root = Control.new()
@@ -51,6 +57,14 @@ func _boot_flow() -> void:
         show_tutorial_intro()
     else:
         show_lobby()
+
+
+func _on_viewport_size_changed() -> void:
+    # Keep the existing 1280x720 UI design readable across 16:9-ish Android screens.
+    # Anchored full-rect backgrounds already expand; this handler only prevents the
+    # app from presenting an accidental tiny/empty portrait canvas during rotation.
+    if ui_root:
+        ui_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 func clear_ui() -> void:
     for child in ui_root.get_children():

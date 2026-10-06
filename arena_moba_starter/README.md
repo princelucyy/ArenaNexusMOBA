@@ -60,3 +60,10 @@ The workflow enables ETC2/ASTC, creates a signed debug keystore, exports ARM64 +
 ## Production TODO
 
 Real Google/Facebook/WhatsApp OAuth, persistent backend account service, authoritative multiplayer server, matchmaking, anti-cheat, chat, friends/guilds, live events, payment/store integrations, release signing, CDN, analytics, and production infrastructure should be implemented separately.
+
+
+## V2.1 landscape/responsive fix
+- Android uses sensor-landscape orientation for the MOBA UI/gameplay.
+- Stretch aspect uses `expand` so full-screen backdrops fill wider phone aspect ratios without gray portrait bars.
+- Runtime orientation is reinforced through `DisplayServer.SCREEN_SENSOR_LANDSCAPE`.
+- This is an intentional landscape-first MOBA layout; a dedicated portrait lobby can be added later as a separate responsive scene.
