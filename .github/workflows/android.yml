@@ -38,7 +38,7 @@ jobs:
           unzip -o godot.zip
           unzip -o templates.tpz -d templates
 
-          test -f templates/android_debug.apk
+          test -n "$(find templates -type f -name 'android_debug.apk' -print -quit)"
           chmod +x Godot_v4.7.2-stable_linux.x86_64
 
       - name: Install Godot Android templates
