@@ -1,0 +1,83 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.1.0'
+
+      - name: Download Godot 4.7.2
+        run: |
+          mkdir -p "$RUNNER_TEMP/godot"
+          cd "$RUNNER_TEMP/godot"
+          curl -L -o godot.zip https://downloads.tuxfamily.org/godotengine/4.7.2/Godot_v4.7.2-stable_linux.x86_64.zip
+          curl -L -o templates.tpz https://downloads.tuxfamily.org/godotengine/4.7.2/Godot_v4.7.2-stable_export_templates.tpz
+          unzip -o godot.zip
+          unzip -o templates.tpz -d templates
+          find templates -type f -name 'android_debug.apk' -o -name 'android_release.apk'
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+
+      - name: Install Godot Android templates
+        run: |
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          find "$RUNNER_TEMP/godot/templates" -type f -name 'android_debug.apk' -exec cp {} "$HOME/.local/share/godot/export_templates/4.7.2.stable/android_debug.apk" \;
+          find "$RUNNER_TEMP/godot/templates" -type f -name 'android_release.apk' -exec cp {} "$HOME/.local/share/godot/export_templates/4.7.2.stable/android_release.apk" \;
+          echo '4.7.2.stable' > "$HOME/.local/share/godot/export_templates/4.7.2.stable/version.txt"
+
+      - name: Create Android debug preset
+        run: |
+          cat > export_presets.cfg <<'PRESET'
+[preset.0]
+name="Android"
+platform="Android"
+runnable=true
+dedicated_server=false
+custom_features=""
+export_filter="all_resources"
+include_filter=""
+exclude_filter=""
+export_path="build/ArenaNexus-debug.apk"
+patch_list=PackedStringArray()
+
+[preset.0.options]
+custom_template/debug=""
+custom_template/release=""
+architectures/armeabi-v7a=false
+architectures/arm64-v8a=true
+architectures/x86=false
+architectures/x86_64=false
+version/code=1
+version/name="0.1.0"
+package/unique_name="com.kittown.arenanexus"
+package/name="Arena Nexus MOBA"
+package/signed=false
+screen/handheld/orientation=1
+PRESET
+
+      - name: Export APK
+        run: |
+          mkdir -p build
+          "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --path . --export-debug "Android" build/ArenaNexus-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArenaNexus-debug-apk
+          path: build/ArenaNexus-debug.apk
