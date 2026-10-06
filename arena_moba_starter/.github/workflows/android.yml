@@ -1,0 +1,123 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.1.0'
+
+      - name: Download Godot 4.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          cd "$RUNNER_TEMP/godot"
+          curl -fL -o godot.zip \
+            https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          curl -fL -o templates.tpz \
+            https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          unzip -o godot.zip
+          unzip -o templates.tpz -d templates
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+          test -n "$(find templates -type f -name 'android_debug.apk' -print -quit)"
+
+      - name: Install Godot Android templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "$TEMPLATE_DIR"
+          cp "$(find "$RUNNER_TEMP/godot/templates" -type f -name 'android_debug.apk' -print -quit)" "$TEMPLATE_DIR/android_debug.apk"
+          cp "$(find "$RUNNER_TEMP/godot/templates" -type f -name 'android_release.apk' -print -quit)" "$TEMPLATE_DIR/android_release.apk"
+          printf '4.7.2.stable\n' > "$TEMPLATE_DIR/version.txt"
+
+      - name: Create debug keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore "$GITHUB_WORKSPACE/android-debug.keystore" \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=Android Debug,O=Android,C=US'
+
+      - name: Create Android export preset
+        shell: bash
+        run: |
+          cat > export_presets.cfg <<'PRESET'
+          [preset.0]
+          name="Android"
+          platform="Android"
+          runnable=true
+          dedicated_server=false
+          custom_features=""
+          export_filter="all_resources"
+          include_filter=""
+          exclude_filter=""
+          export_path="build/ArenaNexus-debug.apk"
+          patch_list=PackedStringArray()
+
+          [preset.0.options]
+          custom_template/debug=""
+          custom_template/release=""
+          architectures/arm64-v8a=true
+          architectures/armeabi-v7a=true
+          architectures/x86=false
+          architectures/x86_64=false
+          package/unique_name="com.kittown.arenanexus"
+          package/name="Arena Nexus MOBA"
+          package/signed=true
+          version/code=3
+          version/name="0.2.0"
+          keystore/debug="android-debug.keystore"
+          keystore/debug_user="androiddebugkey"
+          keystore/debug_password="android"
+          screen/handheld/orientation=1
+          PRESET
+
+      - name: Export APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" \
+            --headless \
+            --path . \
+            --export-debug "Android" \
+            build/ArenaNexus-debug.apk
+
+      - name: Validate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/build-tools/36.1.0/apksigner" verify --verbose build/ArenaNexus-debug.apk
+          unzip -l build/ArenaNexus-debug.apk | grep -E 'lib/(arm64-v8a|armeabi-v7a)/libgodot_android.so' || true
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArenaNexus-debug-apk
+          path: build/ArenaNexus-debug.apk
+          if-no-files-found: error
