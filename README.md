@@ -1,28 +1,37 @@
-# Arena Nexus MOBA — Godot 4.7.2 Starter
+# Arena Nexus MOBA
 
-Original MOBA prototype, not a clone of Mobile Legends. This starter includes a playable 5v5-style arena loop with:
+Original 2D top-down MOBA prototype for Android, built with Godot 4.7.2.
 
-- 1 player hero + 9 bot heroes
-- 3 lanes
-- towers and bases
-- minion waves
-- basic attack + area skill
-- HP, mana, XP, level and gold
-- respawn
-- win/lose condition when a base falls
-- keyboard controls and basic touchscreen controls
-- GitHub Actions APK debug export
+## Current gameplay layer
 
-## Local run
-Open the folder with Godot 4.7.2 stable and run the project.
+- Hero selection with 5 original heroes
+- 5v5-style match: 1 player + 4 allied bots vs 5 enemy bots
+- 3 lanes, river and jungle decoration
+- Minion waves, ranged minions and periodic siege minions
+- Turrets and base structures
+- Basic attack, Skill 1, Skill 2 and Ultimate
+- HP, Mana, XP, Level, Gold and KDA
+- Hero respawn
+- Item shop with stat upgrades
+- Touch controls and keyboard controls
+- Android export with ETC2/ASTC enabled
 
 ## Controls
-Desktop: WASD/Arrow keys to move, Left Mouse or ATK touch area to attack, Q/Space or SK1 touch area for skill.
 
-Mobile: left side drag = movement; lower-right = attack; upper-right = skill.
+- WASD / Arrow keys = move
+- Mouse click = basic attack
+- Q / Space = Skill 1
+- E = Skill 2
+- R = Ultimate
+- B = shop
+- Touch: left joystick + action zones on the right side
 
-## Termux workflow
-This repository is designed to be edited with Termux and built by GitHub Actions. The APK is produced by CI.
+## Android build
 
-## Next production layers
-Replace procedural visuals with original assets; add authoritative multiplayer server, matchmaking, accounts, persistence, anti-cheat, hero data, item shop, skills, effects, audio, analytics and live-service tooling.
+GitHub Actions workflow:
+
+`.github/workflows/android.yml`
+
+Artifact:
+
+`ArenaNexus-debug-apk`
