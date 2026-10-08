@@ -1,0 +1,2 @@
+User-provided artwork PNG SHA-256: e54bdffe33b9844f7a06503a5fa45613111896ec5d0fa56985202ba7a7d6be46
+Icon artwork: original 1254x1254 source; only black outer-corner fields were made transparent for launcher use; no cropping or rescaling inset.

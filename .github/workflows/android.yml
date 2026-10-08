@@ -1,0 +1,111 @@
+name: Build Astro Royale V36
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.1.0'
+
+      - name: Download Godot 4.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          cd "$RUNNER_TEMP/godot"
+          curl -fL -o godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          curl -fL -o templates.tpz https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          unzip -q -o godot.zip
+          unzip -q -o templates.tpz -d templates
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+
+      - name: Install Android templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "$D"
+          DEBUG_TEMPLATE="$(find "$RUNNER_TEMP/godot/templates" -type f -name android_debug.apk -print -quit)"
+          RELEASE_TEMPLATE="$(find "$RUNNER_TEMP/godot/templates" -type f -name android_release.apk -print -quit)"
+          test -n "$DEBUG_TEMPLATE"
+          test -n "$RELEASE_TEMPLATE"
+          cp "$DEBUG_TEMPLATE" "$D/android_debug.apk"
+          cp "$RELEASE_TEMPLATE" "$D/android_release.apk"
+          printf '%s\n' '4.7.2.stable' > "$D/version.txt"
+
+      - name: Debug keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v -keystore android-debug.keystore -storepass android -keypass android \
+            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname 'CN=Android Debug,O=Android,C=US'
+
+      - name: Validate project config
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f project.godot
+          test -f scenes/main.tscn
+          test -f scripts/app.gd
+          test -f assets/astro_royale_logo.png
+          test -f assets/astro_royale_app_icon_192.png
+          test -f assets/astro_royale_adaptive_foreground_432.png
+          test -f assets/astro_royale_adaptive_background_432.png
+          grep -q 'version/code=3601' export_presets.cfg
+          grep -q 'package/unique_name="com.kittown.astroroyale.v36"' export_presets.cfg
+          grep -q 'permissions/read_calendar=true' export_presets.cfg
+          grep -q 'permissions/camera=true' export_presets.cfg
+          grep -q 'permissions/post_notifications=true' export_presets.cfg
+          grep -q 'BLUETOOTH_SCAN' export_presets.cfg
+          grep -q 'run/main_scene="res://scenes/main.tscn"' project.godot
+
+      - name: Godot parse-check
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --path . --editor --quit 2>&1 | tee godot-parse.log
+
+      - name: Export APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          "$RUNNER_TEMP/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --path . --export-debug "Android" build/AstroRoyale-V36.apk
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/build-tools/36.1.0/apksigner" verify --verbose build/AstroRoyale-V36.apk
+
+      - name: SHA-256
+        shell: bash
+        run: sha256sum build/AstroRoyale-V36.apk | tee build/SHA256SUM.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AstroRoyale-v36-full-engine-apk
+          path: |
+            build/AstroRoyale-V36.apk
+            build/SHA256SUM.txt
