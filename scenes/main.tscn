@@ -1,0 +1,568 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/astro_royale_logo.png" id="1_logo"]
+[ext_resource type="Script" path="res://scripts/app.gd" id="2_app"]
+
+[sub_resource type="Animation" id="Animation_RESET"]
+length = 0.0
+
+[sub_resource type="Animation" id="Animation_BootFlow"]
+resource_name = "BootFlow"
+length = 7.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Boot/LogoScreen:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 1.2), "transitions": PackedFloat32Array(1, 1), "update": 1, "values": [true, false]}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Boot/SplashScreen:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {"times": PackedFloat32Array(0, 1.2, 3.3), "transitions": PackedFloat32Array(1, 1, 1), "update": 1, "values": [false, true, false]}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Boot/LoadingScreen:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {"times": PackedFloat32Array(0, 3.3, 7.0), "transitions": PackedFloat32Array(1, 1, 1), "update": 1, "values": [false, true, false]}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Boot/LoadingScreen/Center/Bar:value")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {"times": PackedFloat32Array(3.3, 7.0), "transitions": PackedFloat32Array(0.6, 0.6), "update": 0, "values": [0.0, 100.0]}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Boot/LoadingScreen/Center/Pct:text")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {"times": PackedFloat32Array(3.3, 7.0), "transitions": PackedFloat32Array(1, 1), "update": 1, "values": ["0%", "100%"]}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Boot:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {"times": PackedFloat32Array(0, 7.0), "transitions": PackedFloat32Array(1, 1), "update": 1, "values": [true, false]}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_main"]
+_data = {"RESET": SubResource("Animation_RESET"), "BootFlow": SubResource("Animation_BootFlow")}
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.047, 0.106, 0.18, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.39, 0.9, 1, 0.45)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+content_margin_left = 28.0
+content_margin_top = 26.0
+content_margin_right = 28.0
+content_margin_bottom = 26.0
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="App" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_app")
+
+[node name="BG" type="ColorRect" parent="App"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.016, 0.039, 0.074, 1)
+mouse_filter = 2
+
+[node name="TermsPanel" type="Control" parent="App"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="App/TermsPanel"]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 100.0
+offset_right = 1030.0
+offset_bottom = 620.0
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="VBox" type="VBoxContainer" parent="App/TermsPanel/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="App/TermsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "ASTRO ROYALE"
+horizontal_alignment = 1
+
+[node name="Sub" type="Label" parent="App/TermsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "WELCOME TO THE ARENA"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="App/TermsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 18
+text = "Dengan melanjutkan, kamu menyetujui User Agreement, Privacy Policy, dan Fair Play Policy Astro Royale.\n\nAkun lokal dan progres dasar disimpan di perangkat ini."
+autowrap_mode = 2
+
+[node name="Status" type="Label" parent="App/TermsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
+text = ""
+horizontal_alignment = 1
+
+[node name="Accept" type="Button" parent="App/TermsPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "SETUJU & LANJUTKAN"
+mouse_default_cursor_shape = 2
+focus_mode = 1
+
+[node name="LoginPanel" type="Control" parent="App"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="App/LoginPanel"]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 100.0
+offset_right = 980.0
+offset_bottom = 620.0
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="VBox" type="VBoxContainer" parent="App/LoginPanel/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="App/LoginPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "ACCOUNT"
+horizontal_alignment = 1
+
+[node name="Info" type="Label" parent="App/LoginPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.82, 1)
+text = "Buat akun lokal atau masuk ke akun yang tersimpan di perangkat."
+autowrap_mode = 2
+
+[node name="Username" type="LineEdit" parent="App/LoginPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+placeholder_text = "Username"
+
+[node name="Password" type="LineEdit" parent="App/LoginPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+placeholder_text = "Password (min. 8 karakter)"
+secret = true
+
+[node name="Status" type="Label" parent="App/LoginPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.44, 0.52, 1)
+horizontal_alignment = 1
+
+[node name="Login" type="Button" parent="App/LoginPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "MASUK"
+
+[node name="Register" type="Button" parent="App/LoginPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "DAFTAR AKUN"
+
+[node name="Guest" type="Button" parent="App/LoginPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "LANJUT SEBAGAI TAMU"
+
+[node name="LobbyPanel" type="Control" parent="App"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="ColorRect" parent="App/LobbyPanel"]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 72.0
+color = Color(0.04, 0.09, 0.15, 0.98)
+
+[node name="User" type="Label" parent="App/LobbyPanel/Header"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 22
+text = "Guest • Level 1"
+
+[node name="Title" type="Label" parent="App/LobbyPanel/Header"]
+layout_mode = 0
+offset_left = 500.0
+offset_top = 12.0
+offset_right = 780.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 28
+text = "ASTRO ROYALE"
+horizontal_alignment = 1
+
+[node name="Network" type="Label" parent="App/LobbyPanel/Header"]
+layout_mode = 0
+offset_left = 970.0
+offset_top = 18.0
+offset_right = 1240.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.38, 0.9, 1, 1)
+text = "● ONLINE • 42 ms"
+horizontal_alignment = 2
+
+[node name="Body" type="VBoxContainer" parent="App/LobbyPanel"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 100.0
+offset_right = 1224.0
+offset_bottom = 680.0
+theme_override_constants/separation = 12
+
+[node name="Banner" type="TextureRect" parent="App/LobbyPanel/Body"]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 6
+texture = ExtResource("1_logo")
+
+[node name="Stats" type="Label" parent="App/LobbyPanel/Body"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "COINS 2500    DIAMONDS 100    WINS 0    LOSSES 0"
+horizontal_alignment = 1
+
+[node name="Play" type="Button" parent="App/LobbyPanel/Body"]
+custom_minimum_size = Vector2(0, 62)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "PLAY 5V5"
+
+[node name="History" type="Button" parent="App/LobbyPanel/Body"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "MATCH HISTORY"
+
+[node name="Logout" type="Button" parent="App/LobbyPanel/Body"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+text = "LOG OUT"
+
+[node name="MatchPanel" type="Control" parent="App"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ArenaBG" type="ColorRect" parent="App/MatchPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.1, 0.08, 1)
+
+[node name="Center" type="VBoxContainer" parent="App/MatchPanel"]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 200.0
+offset_right = 980.0
+offset_bottom = 520.0
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="App/MatchPanel/Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "ASTRO ROYALE • 5V5"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="App/MatchPanel/Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "MATCH STARTING"
+horizontal_alignment = 1
+
+[node name="Finish" type="Button" parent="App/MatchPanel/Center"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "EXIT MATCH"
+
+[node name="MatchTimer" type="Timer" parent="App/MatchPanel"]
+wait_time = 1.0
+
+[node name="ResultPanel" type="Control" parent="App"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="App/ResultPanel"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 180.0
+offset_right = 940.0
+offset_bottom = 540.0
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="VBox" type="VBoxContainer" parent="App/ResultPanel/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="App/ResultPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "VICTORY"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="App/ResultPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.4, 1)
+text = "+450 Coins • Match saved"
+horizontal_alignment = 1
+
+[node name="Back" type="Button" parent="App/ResultPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+text = "BACK TO LOBBY"
+
+[node name="HistoryPanel" type="Control" parent="App"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="App/HistoryPanel"]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 100.0
+offset_right = 1020.0
+offset_bottom = 620.0
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="VBox" type="VBoxContainer" parent="App/HistoryPanel/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="App/HistoryPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "MATCH HISTORY"
+horizontal_alignment = 1
+
+[node name="History" type="Label" parent="App/HistoryPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "No matches yet."
+
+[node name="Back" type="Button" parent="App/HistoryPanel/Panel/VBox"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+text = "BACK"
+
+[node name="Boot" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="Boot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="LogoScreen" type="Control" parent="Boot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Logo" type="TextureRect" parent="Boot/LogoScreen"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 70.0
+offset_right = 890.0
+offset_bottom = 570.0
+expand_mode = 1
+stretch_mode = 5
+texture = ExtResource("1_logo")
+
+[node name="SplashScreen" type="Control" parent="Boot"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Image" type="TextureRect" parent="Boot/SplashScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+texture = ExtResource("1_logo")
+
+[node name="Shade" type="ColorRect" parent="Boot/SplashScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.18)
+
+[node name="Title" type="Label" parent="Boot/SplashScreen"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 560.0
+offset_right = 1230.0
+offset_bottom = 610.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 34
+text = "ASTRO ROYALE"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Boot/SplashScreen"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 610.0
+offset_right = 1230.0
+offset_bottom = 650.0
+theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
+theme_override_font_sizes/font_size = 18
+text = "STARFALL • SEASON 01"
+horizontal_alignment = 1
+
+[node name="LoadingScreen" type="Control" parent="Boot"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="VBoxContainer" parent="Boot/LoadingScreen"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 240.0
+offset_right = 990.0
+offset_bottom = 480.0
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Title" type="Label" parent="Boot/LoadingScreen/Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "ASTRO ROYALE"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Boot/LoadingScreen/Center"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.75, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "Preparing game..."
+horizontal_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="Boot/LoadingScreen/Center"]
+custom_minimum_size = Vector2(700, 26)
+layout_mode = 2
+show_percentage = false
+
+[node name="Pct" type="Label" parent="Boot/LoadingScreen/Center"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "0%"
+horizontal_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {&"": SubResource("AnimationLibrary_main")}
+autoplay = "BootFlow"
+
+[connection signal="pressed" from="App/TermsPanel/Panel/VBox/Accept" to="App" method="_on_accept_terms"]
+[connection signal="pressed" from="App/LoginPanel/Panel/VBox/Login" to="App" method="_on_login"]
+[connection signal="pressed" from="App/LoginPanel/Panel/VBox/Register" to="App" method="_on_register"]
+[connection signal="pressed" from="App/LoginPanel/Panel/VBox/Guest" to="App" method="_on_guest"]
+[connection signal="pressed" from="App/LobbyPanel/Body/Play" to="App" method="_on_play"]
+[connection signal="pressed" from="App/LobbyPanel/Body/History" to="App" method="_on_history"]
+[connection signal="pressed" from="App/LobbyPanel/Body/Logout" to="App" method="_on_logout"]
+[connection signal="pressed" from="App/MatchPanel/Center/Finish" to="App" method="_on_back_to_lobby"]
+[connection signal="timeout" from="App/MatchPanel/MatchTimer" to="App" method="_on_match_tick"]
+[connection signal="pressed" from="App/ResultPanel/Panel/VBox/Back" to="App" method="_on_back_to_lobby"]
+[connection signal="pressed" from="App/HistoryPanel/Panel/VBox/Back" to="App" method="_on_back_to_lobby"]
