@@ -1,0 +1,3 @@
+File: a_highly_detailed_polished_sci_fi_fantasy_3d_2d_h.png
+SHA-256 original generated source: d2e30b6dc638b941a50878ac38671594b387a6c5d3b6559127bdaf4bda195d4a
+Derived assets use the full square composition with rounded transparent corners; no internal crop.
