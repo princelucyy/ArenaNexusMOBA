@@ -5,7 +5,7 @@ V38 is built from the V37 source to address the text-only battle screen and mode
 ## Main changes
 - Android icon updated from the supplied ASTRO ROYALE full-wordmark artwork. The standard 192px launcher icon keeps the full composition; the adaptive foreground is composed specifically for Android's central safe zone so ASTRO/ROYALE stays legible after launcher masking.
 - Mode selector: Classic 5v5, Ranked 5v5, Custom Room, Arcade, Brawl, Training, VS AI, Practice Range.
-- Dynamic 3D arena rendered by Godot SubViewport using meshes/materials: 3 lanes, river, jungle crystal clusters, blue/red towers and cores, hero units and minion units.
+- Dynamic 3D arena rendered in the main Godot viewport (Android blank-SubViewport hotfix) using meshes/materials: 3 lanes, river, jungle crystal clusters, blue/red towers and cores, hero units and minion units.
 - On-screen movement controls, target hero/tower/core, lane selection, attack, two skills, ultimate, recall and push wave.
 - Local combat target logic: hero -> tower -> core; tower protects the core in local practice mode.
 - Match HUD uses the arena as visual background rather than a text-only screen; menu navigation is retained.

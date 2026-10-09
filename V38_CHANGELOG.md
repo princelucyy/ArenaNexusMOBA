@@ -6,3 +6,5 @@
 - Added local hero/tower/core target progression and tower-gated core.
 - Kept V37 account/onboarding/services and save migration.
 - Updated Android package/export/workflow to V38.
+
+- Arena hotfix: moved procedural 3D world into the main viewport to avoid blank nested SubViewport rendering on Android; hides full-screen 2D app background during battle and restores it outside battle.

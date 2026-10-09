@@ -2076,132 +2076,8 @@ func _v38_create_tower(parent: Node3D, pos: Vector3, team_color: Color) -> Node3
     return tower
 
 func _v38_ensure_arena_visual() -> void:
-    if is_instance_valid(v38_arena_container):
-        return
-    # Remove old static poster overlays from the match screen so the battlefield is visible.
-    for old_name in ["V33ArtBG", "V33ArtVeil"]:
-        var old_node := match_panel.get_node_or_null(old_name) as Control
-        if is_instance_valid(old_node):
-            old_node.visible = false
-    var legacy_bg := match_panel.get_node_or_null("ArenaBG") as ColorRect
-    if is_instance_valid(legacy_bg):
-        legacy_bg.visible = false
-    v38_arena_container = SubViewportContainer.new()
-    v38_arena_container.name = "V38ArenaViewportContainer"
-    v38_arena_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    v38_arena_container.stretch = true
-    v38_arena_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    v38_arena_viewport = SubViewport.new()
-    v38_arena_viewport.name = "V38ArenaViewport"
-    v38_arena_viewport.size = Vector2i(1280, 720)
-    v38_arena_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-    v38_arena_viewport.transparent_bg = false
-    v38_arena_container.add_child(v38_arena_viewport)
-    match_panel.add_child(v38_arena_container)
-    match_panel.move_child(v38_arena_container, 1)
-    v38_arena_root = Node3D.new()
-    v38_arena_root.name = "V38Battlefield3D"
-    v38_arena_viewport.add_child(v38_arena_root)
-    var center := match_panel.get_node_or_null("Center") as VBoxContainer
-    if is_instance_valid(center):
-        center.position = Vector2(18, 12)
-        center.size = Vector2(820, 88)
-        center.add_theme_constant_override("separation", 3)
-        var title_label := center.get_node_or_null("Title") as Label
-        if is_instance_valid(title_label):
-            title_label.text = "ASTRO ROYALE  •  BATTLEFIELD"
-            title_label.add_theme_font_size_override("font_size", 19)
-        var status_label := center.get_node_or_null("Status") as Label
-        if is_instance_valid(status_label):
-            status_label.add_theme_font_size_override("font_size", 15)
-        var legacy_finish := center.get_node_or_null("Finish") as Button
-        if is_instance_valid(legacy_finish):
-            legacy_finish.visible = false
-    var world_env := WorldEnvironment.new()
-    var environment := Environment.new()
-    environment.background_mode = Environment.BG_COLOR
-    environment.background_color = Color(0.025, 0.075, 0.15, 1)
-    environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-    environment.ambient_light_color = Color(0.48, 0.64, 0.84, 1)
-    environment.ambient_light_energy = 0.8
-    world_env.environment = environment
-    v38_arena_root.add_child(world_env)
-    var sun := DirectionalLight3D.new()
-    sun.rotation_degrees = Vector3(-52, -28, 0)
-    sun.light_color = Color(0.78, 0.88, 1.0, 1)
-    sun.light_energy = 1.45
-    sun.shadow_enabled = true
-    v38_arena_root.add_child(sun)
-    var camera := Camera3D.new()
-    camera.name = "BattleCamera"
-    camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-    camera.size = 31.5
-    camera.position = Vector3(0, 33, 27)
-    camera.look_at(Vector3(0, 0, 0), Vector3.UP)
-    camera.current = true
-    v38_arena_root.add_child(camera)
-
-    var grass_mat := _v38_material(Color(0.07, 0.24, 0.18), 0.0)
-    var lane_mat := _v38_material(Color(0.25, 0.32, 0.36), 0.18)
-    var lane_edge_mat := _v38_material(Color(0.58, 0.72, 0.76), 0.22, true)
-    var river_mat := _v38_material(Color(0.03, 0.32, 0.53), 0.3, true)
-    var jungle_mat := _v38_material(Color(0.025, 0.13, 0.095), 0.0)
-    var ground := PlaneMesh.new()
-    ground.size = Vector2(58, 38)
-    _v38_add_mesh(v38_arena_root, ground, grass_mat, Vector3(0, -0.22, 0))
-    for lane_z in [-10.0, 0.0, 10.0]:
-        var lane := BoxMesh.new()
-        lane.size = Vector3(49, 0.12, 3.4)
-        _v38_add_mesh(v38_arena_root, lane, lane_mat, Vector3(0, -0.08, lane_z))
-        var edge := BoxMesh.new()
-        edge.size = Vector3(49, 0.035, 0.09)
-        _v38_add_mesh(v38_arena_root, edge, lane_edge_mat, Vector3(0, 0.005, lane_z - 1.72))
-        _v38_add_mesh(v38_arena_root, edge, lane_edge_mat, Vector3(0, 0.005, lane_z + 1.72))
-    var river := BoxMesh.new()
-    river.size = Vector3(2.3, 0.04, 40)
-    var river_inst := _v38_add_mesh(v38_arena_root, river, river_mat, Vector3(0, 0.025, 0))
-    river_inst.rotation_degrees.y = 12.0
-    # Jungle islands and crystals along both sides of the lanes.
-    for p in [Vector3(-7, 0, -6), Vector3(-3, 0, -6.8), Vector3(4, 0, -6.7), Vector3(8, 0, -6), Vector3(-8, 0, 6.2), Vector3(-3, 0, 7), Vector3(4, 0, 7), Vector3(8, 0, 6)]:
-        var shrub := SphereMesh.new()
-        shrub.radius = 1.05
-        shrub.height = 1.8
-        _v38_add_mesh(v38_arena_root, shrub, jungle_mat, p + Vector3(0, 0.42, 0), Vector3(1.3, 0.72, 1.0))
-        var crystal_mesh := PrismMesh.new()
-        crystal_mesh.size = Vector3(0.55, 1.45, 0.55)
-        _v38_add_mesh(v38_arena_root, crystal_mesh, _v38_material(Color(0.05, 0.68, 1.0), 0.5, true), p + Vector3(0.0, 1.3, 0.0))
-    var blue := Color(0.03, 0.42, 1.0, 1)
-    var red := Color(1.0, 0.14, 0.19, 1)
-    var lane_z_values := [-10.0, 0.0, 10.0]
-    var lane_names := ["top", "mid", "bottom"]
-    v38_enemy_towers.clear()
-    for lane_index in range(lane_z_values.size()):
-        var lane_z: float = lane_z_values[lane_index]
-        _v38_create_tower(v38_arena_root, Vector3(-13, 0, lane_z), blue)
-        var enemy_tower := _v38_create_tower(v38_arena_root, Vector3(13, 0, lane_z), red)
-        v38_enemy_towers[str(lane_names[lane_index])] = enemy_tower
-        if str(lane_names[lane_index]) == "mid":
-            v38_enemy_mid_tower = enemy_tower
-    var core_mesh := CylinderMesh.new()
-    core_mesh.top_radius = 0.75
-    core_mesh.bottom_radius = 1.4
-    core_mesh.height = 2.4
-    v38_enemy_core_model = Node3D.new()
-    v38_enemy_core_model.position = Vector3(22, 0, 0)
-    v38_arena_root.add_child(v38_enemy_core_model)
-    _v38_add_mesh(v38_enemy_core_model, core_mesh, _v38_material(red, 0.58, true), Vector3(0, 1.25, 0))
-    var player_core := Node3D.new()
-    player_core.position = Vector3(-22, 0, 0)
-    v38_arena_root.add_child(player_core)
-    _v38_add_mesh(player_core, core_mesh, _v38_material(blue, 0.58, true), Vector3(0, 1.25, 0))
-    v38_player_model = _v38_create_character(v38_arena_root, blue, Vector3(-8.5, 0, 0), 1.0)
-    v38_enemy_model = _v38_create_character(v38_arena_root, red, Vector3(8.5, 0, 0), 1.0)
-    v38_minion_models.clear()
-    for i in range(3):
-        v38_minion_models.append(_v38_create_character(v38_arena_root, blue, Vector3(-4.5 - float(i) * 1.2, 0, -0.8 + float(i) * 0.8), 0.42))
-        v38_minion_models.append(_v38_create_character(v38_arena_root, red, Vector3(4.5 + float(i) * 1.2, 0, 0.8 - float(i) * 0.8), 0.42))
-    _v38_build_joystick()
-    _v38_add_match_exit_button()
+    # Keep one arena-construction path so the 3D scene cannot be duplicated.
+    _ensure_v38_arena_visual()
 
 func _v38_build_joystick() -> void:
     if is_instance_valid(v38_joystick_panel):
@@ -2300,7 +2176,13 @@ func _v38_refresh_arena_state() -> void:
         v38_enemy_core_model.visible = enemy_hp > 0
 
 func _process(delta: float) -> void:
-    if not is_instance_valid(v38_arena_root) or not match_panel.visible:
+    var in_battle := is_instance_valid(match_panel) and match_panel.visible
+    var app_bg := get_node_or_null("BG") as Control
+    if is_instance_valid(app_bg):
+        app_bg.visible = not in_battle
+    if is_instance_valid(v38_arena_root):
+        v38_arena_root.visible = in_battle
+    if not is_instance_valid(v38_arena_root) or not in_battle:
         return
     v38_arena_clock += delta
     if is_instance_valid(v38_player_model):
@@ -2320,9 +2202,10 @@ func _process(delta: float) -> void:
             minion.position = pos
 
 func _ensure_v38_arena_visual() -> void:
-    if is_instance_valid(v38_arena_container):
+    # Hotfix: render the 3D world in the main viewport, not a nested SubViewport.
+    # This avoids the Android blank-viewport issue while keeping the 2D HUD above it.
+    if is_instance_valid(v38_arena_root):
         return
-    # Remove old static poster overlays from the match screen so the battlefield is visible.
     for old_name in ["V33ArtBG", "V33ArtVeil"]:
         var old_node := match_panel.get_node_or_null(old_name) as Control
         if is_instance_valid(old_node):
@@ -2330,22 +2213,15 @@ func _ensure_v38_arena_visual() -> void:
     var legacy_bg := match_panel.get_node_or_null("ArenaBG") as ColorRect
     if is_instance_valid(legacy_bg):
         legacy_bg.visible = false
-    v38_arena_container = SubViewportContainer.new()
-    v38_arena_container.name = "V38ArenaViewportContainer"
-    v38_arena_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    v38_arena_container.stretch = true
-    v38_arena_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    v38_arena_viewport = SubViewport.new()
-    v38_arena_viewport.name = "V38ArenaViewport"
-    v38_arena_viewport.size = Vector2i(1280, 720)
-    v38_arena_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-    v38_arena_viewport.transparent_bg = false
-    v38_arena_container.add_child(v38_arena_viewport)
-    match_panel.add_child(v38_arena_container)
-    match_panel.move_child(v38_arena_container, 1)
+    var app_bg := get_node_or_null("BG") as Control
+    if is_instance_valid(app_bg):
+        app_bg.visible = false
+    v38_arena_container = null
+    v38_arena_viewport = null
     v38_arena_root = Node3D.new()
     v38_arena_root.name = "V38Battlefield3D"
-    v38_arena_viewport.add_child(v38_arena_root)
+    v38_arena_root.visible = true
+    add_child(v38_arena_root)
     var center := match_panel.get_node_or_null("Center") as VBoxContainer
     if is_instance_valid(center):
         center.position = Vector2(18, 12)
